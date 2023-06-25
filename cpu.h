@@ -1,5 +1,7 @@
 // https://github.com/mattmikolay/chip-8/wiki/Mastering-CHIP%E2%80%908
 
+#pragma once
+
 #include <stdio.h>
 #include <stdint.h>
 #include "memory.h"
