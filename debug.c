@@ -23,6 +23,7 @@ void dump_memory(uint8_t *memory, size_t size_byte){
         } else{
             num_bytes_to_print = 32;
         }
+        // printing the hex value 
         for(int j = 0; j < num_bytes_to_print; j++){
             printf("%02X ", memory[(i * num_bytes_to_print) + j]);
             if(j == 15){
@@ -30,6 +31,14 @@ void dump_memory(uint8_t *memory, size_t size_byte){
             }
         }
         printf(" ");
+        // upon reaching last line, add padding to hex values so that all characters will align
+        if(i == num_of_lines - 1){
+            int padding = 32 - num_bytes_to_print;
+            for (int j = 0; j < padding; j++) {
+                printf("   ");
+            }
+        }
+        // printing characters
         for (int j = 0; j < num_bytes_to_print; j++) {
             uint8_t value = memory[i * 32 + j];
             if (isprint(value)) {
@@ -54,8 +63,27 @@ void dump_register_content(cpu *cpu_ctx){
     printf("SP           - %02X\n", cpu_ctx->stack_pointer);
 }
 
+void dump_game_content(uint8_t *file_name){
+    // loading game into memory space
+    printf("file name is: %s\n", file_name);
+    // open the file in "rb" mode -> rb = read binary 
+    FILE* f = fopen(file_name, "rb");  
+    // fseek sets the file pointer to the position "SEEK_END", which is the end of the file
+    fseek(f, 0, SEEK_END);
+    // ftell returns the current position of the file pointer. It corresponds to the size of the file in bytes because 
+    // the file pointer is currently pointing at the end of the file
+    long size = ftell(f);
+    // SEEK_SET returns the file pointer back to the beginning
+    fseek(f, 0, SEEK_SET);
+
+    uint8_t game[size];
+    int result = fread(game, size, 1, f);
+    dump_memory(game, size);
+}
+
 void test(){
     // memory test 
+    printf("\n");
     memory mem;
     memory_set(&mem, 32, 0x20);
     memory_set(&mem, 13, 0x83);
@@ -88,24 +116,4 @@ void test(){
     cpu_ctx.stack_pointer = 0x12;
     dump_register_content(&cpu_ctx);
     printf("\n\n");
-
-    // loading game into memory space
-    const char* file_name = "GAMES/GAMES/CAVE.ch8";
-    printf("file name is: %s\n", file_name);
-    // open the file in "rb" mode -> rb = read binary 
-    FILE* f = fopen(file_name, "rb");  
-    // fseek sets the file pointer to the position "SEEK_END", which is the end of the file
-    fseek(f, 0, SEEK_END);
-    // ftell returns the current position of the file pointer. It corresponds to the size of the file in bytes because 
-    // the file pointer is currently pointing at the end of the file
-    long size = ftell(f);
-    // SEEK_SET returns the file pointer back to the beginning
-    fseek(f, 0, SEEK_SET);
-
-    uint8_t game[size];
-    int result = fread(game, size, 1, f);
-    cpu_init(&cpu_ctx);
-    load_game(&cpu_ctx, game, size);
-    dump_memory(&cpu_ctx.memory.ram[512], CHIP8_RAM_SIZE_BYTES - 512);
-    
 }
