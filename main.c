@@ -8,7 +8,6 @@
 int main(int argc, char *argv[]){
     
     SDL_Init(SDL_INIT_EVERYTHING);
-
     SDL_Window *window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_ALLOW_HIGHDPI);
     if (window == NULL) {
         printf("SDL_CreateWindow error: %s\n", SDL_GetError());
@@ -26,8 +25,6 @@ int main(int argc, char *argv[]){
     }
     SDL_DestroyWindow(window);
     SDL_Quit();
-
-    return 0;
 
     cpu cpu_ctx;
     char* file_name = "GAMES/GAMES/CAVE.ch8";
@@ -65,12 +62,32 @@ int main(int argc, char *argv[]){
     return 0;
 } 
 #elif __APPLE__
-    int main(){
-        cpu cpu_ctx;
-        char* file_name = "GAMES/GAMES/CAVE.ch8";
-        dump_game_content(file_name);
-        test();
-        debugger(&cpu_ctx);
-        return 0;
-    } 
+#include <SDL2/SDL.h>
+int main(){
+    SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_Window *window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_ALLOW_HIGHDPI);
+    if (window == NULL) {
+        printf("SDL_CreateWindow error: %s\n", SDL_GetError());
+        return 1;
+    }
+
+    SDL_Event event;
+    
+    while(1){
+        if(SDL_PollEvent(&event)){
+            if(event.type == SDL_QUIT){
+                break;
+            }
+        }
+    }
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
+    cpu cpu_ctx;
+    char* file_name = "GAMES/GAMES/CAVE.ch8";
+    dump_game_content(file_name);
+    test();
+    debugger(&cpu_ctx);
+    return 0;
+} 
 #endif
