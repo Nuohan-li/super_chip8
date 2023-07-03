@@ -15,7 +15,7 @@ void load_game(cpu *cpu_ctx, uint8_t *game, size_t gamesize){
 }
 
 void execute_opcode(cpu *cpu_ctx, uint16_t opcode){
-    // printf("Executing opcode: %04X\n", opcode);
+    printf("Executing opcode: %04X\n", opcode);
     int first_digit = (opcode >> 12);
     switch(first_digit){
         case 0:

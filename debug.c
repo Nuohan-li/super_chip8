@@ -63,7 +63,7 @@ void dump_register_content(cpu *cpu_ctx){
     printf("SP           - %02X\n", cpu_ctx->stack_pointer);
 }
 
-void dump_game_content(uint8_t *file_name){
+void dump_game_content(char *file_name){
     // loading game into memory space
     printf("file name is: %s\n", file_name);
     // open the file in "rb" mode -> rb = read binary 
@@ -77,18 +77,18 @@ void dump_game_content(uint8_t *file_name){
     fseek(f, 0, SEEK_SET);
 
     uint8_t game[size];
-    int result = fread(game, size, 1, f);
+    fread(game, size, 1, f);
     dump_memory(game, size);
 }
 
 void debugger(cpu *cpu_ctx){
-    uint8_t *file_name = "GAMES/GAMES/CAVE.ch8";
+    char *file_name = "GAMES/GAMES/CAVE.ch8";
     FILE* f = fopen(file_name, "rb");  
     fseek(f, 0, SEEK_END);
     long size = ftell(f);
     fseek(f, 0, SEEK_SET);
     uint8_t game[size];
-    int result = fread(game, size, 1, f);
+    fread(game, size, 1, f);
     memory_init(&cpu_ctx->memory);
     load_game(cpu_ctx, game, size);
     dump_memory(cpu_ctx->memory.ram, 4096);
@@ -97,7 +97,7 @@ void debugger(cpu *cpu_ctx){
     char input[20];
     int address = 512;
     int size_to_dump = 0;
-    char game_name[50];
+    // char game_name[50];
     printf("Debugging mode\n");
     while(1){
         printf(">>> ");

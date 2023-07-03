@@ -6,7 +6,7 @@
 #ifdef __linux__ 
     int main(){
         cpu cpu_ctx;
-        uint8_t* file_name = "GAMES/GAMES/CAVE.ch8";
+        char* file_name = "GAMES/GAMES/CAVE.ch8";
         dump_game_content(file_name);
         test();
         debugger(&cpu_ctx);
@@ -15,7 +15,7 @@
 #elif __WIN64__
     int main(){
         cpu cpu_ctx;
-        uint8_t* file_name = "GAMES/GAMES/CAVE.ch8";
+        char* file_name = "GAMES/GAMES/CAVE.ch8";
         dump_game_content(file_name);
         test();
         debugger(&cpu_ctx);
@@ -24,7 +24,7 @@
 #elif __APPLE__
     int main(){
         cpu cpu_ctx;
-        uint8_t* file_name = "GAMES/GAMES/CAVE.ch8";
+        char* file_name = "GAMES/GAMES/CAVE.ch8";
         dump_game_content(file_name);
         test();
         debugger(&cpu_ctx);

@@ -3,15 +3,15 @@
 # Detect the operating system
 ifeq ($(OS),Windows_NT)
     # Windows-specific commands and settings
-    EXECUTABLE = program.exe
+    EXECUTABLE = a.exe
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Darwin)
         # macOS-specific commands and settings
-        EXECUTABLE = program
+        EXECUTABLE = a
     else
         # Linux-specific commands and settings
-        EXECUTABLE = program
+        EXECUTABLE = a.out
     endif
 endif
 
