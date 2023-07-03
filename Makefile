@@ -5,16 +5,17 @@
 ifeq ($(OS),Windows_NT)
     # windows
     EXECUTABLE = a.exe
-    INCLUDE = -I win64_sdl/include -L win64_sdl/lib
-    MINGWSDL = -lmingw32 -lSDL2main -lSDL2
+    INCLUDE = -I win64_sdl/include -L win64_sdl/lib -lmingw32 -lSDL2main -lSDL2
 else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Darwin)
         # mac
         EXECUTABLE = a
+        INCLUDE = -lSDL2main -lSDL2 
     else
         # linux
         EXECUTABLE = a.out
+        INCLUDE = -lSDL2main -lSDL2 
     endif
 endif
 
@@ -30,4 +31,4 @@ CFLAGS = -Wall -Wextra
 
 # Build the executable
 $(EXECUTABLE): $(SRCS)
-	gcc -Wall -Wextra $(INCLUDE) $(SRCS) -o $(EXECUTABLE) $(MINGWSDL)
+	gcc -Wall -Wextra $(SRCS) -o $(EXECUTABLE) $(INCLUDE)
