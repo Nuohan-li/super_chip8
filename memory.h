@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #define CHIP8_RAM_SIZE_BYTES 4096
+#define GAME_MEM_SPACE_BEGINNING 512
 
 // this struct emulates the memory module
 typedef struct memory{

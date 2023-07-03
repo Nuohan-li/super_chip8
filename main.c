@@ -3,10 +3,31 @@
 #include "cpu.h"
 #include "debug.h"
 
-
-int main(){
-    uint8_t* file_name = "GAMES/GAMES/CAVE.ch8";
-    dump_game_content(file_name);
-    test();
-    return 0;
-}
+#ifdef __linux__ 
+    int main(){
+        cpu cpu_ctx;
+        uint8_t* file_name = "GAMES/GAMES/CAVE.ch8";
+        dump_game_content(file_name);
+        test();
+        debugger(&cpu_ctx);
+        return 0;
+    }
+#elif __WIN64__
+    int main(){
+        cpu cpu_ctx;
+        uint8_t* file_name = "GAMES/GAMES/CAVE.ch8";
+        dump_game_content(file_name);
+        test();
+        debugger(&cpu_ctx);
+        return 0;
+    } 
+#elif __APPLE__
+    int main(){
+        cpu cpu_ctx;
+        uint8_t* file_name = "GAMES/GAMES/CAVE.ch8";
+        dump_game_content(file_name);
+        test();
+        debugger(&cpu_ctx);
+        return 0;
+    } 
+#endif
