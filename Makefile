@@ -1,5 +1,3 @@
-# all: main.c memory.c cpu.c debug.c
-# 	gcc main.c memory.c cpu.c debug.c
 
 # Detect the operating system
 ifeq ($(OS),Windows_NT)
@@ -24,10 +22,6 @@ all: $(EXECUTABLE)
 
 # Source files
 SRCS = main.c memory.c cpu.c debug.c
-
-# Compiler settings
-CC = gcc
-CFLAGS = -Wall -Wextra
 
 # Build the executable
 $(EXECUTABLE): $(SRCS)
