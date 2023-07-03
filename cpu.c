@@ -30,9 +30,10 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode){
             break;
         case 5:
             break;
-        case 6:
+        case 6: {
             int x = (opcode & 0x0F00) >> 8; 
             int kk = opcode & 0xFF;
             cpu_ctx->V[x] = kk;
+        }
     }
 }
