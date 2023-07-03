@@ -4,15 +4,17 @@
 #include "debug.h"
 
 #ifdef __linux__ 
-#include "win64_sdl/include/SDL2/SDL.h"
+#include<SDL2/SDL.h>
 int main(int argc, char *argv[]){
     
-    SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_Window *window = SDL_CreateWindow("SDL test", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 400, 400, SDL_WINDOW_ALLOW_HIGHDPI); 
-    if(window == NULL){
-        printf("window creation failed\n");
+    SDL_Init(SDL_INIT_EVERYTHING)
+
+    SDL_Window *window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, 0);
+    if (window == NULL) {
+        printf("SDL_CreateWindow error: %s\n", SDL_GetError());
         return 1;
     }
+
     SDL_Event event;
     while(1){
         if(SDL_PollEvent(&event)){
@@ -23,6 +25,8 @@ int main(int argc, char *argv[]){
     }
     SDL_DestroyWindow(window);
     SDL_Quit();
+
+    return 0;
 
     cpu cpu_ctx;
     char* file_name = "GAMES/GAMES/CAVE.ch8";
