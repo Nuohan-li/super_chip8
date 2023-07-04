@@ -128,6 +128,7 @@ void debugger(cpu *cpu_ctx){
         case 'g':
             dump_memory(&cpu_ctx->memory.ram[GAME_MEM_SPACE_BEGINNING], size);
             break;
+            
         default:
             printf("Invalid command\n");
             break;
