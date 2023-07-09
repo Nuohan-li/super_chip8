@@ -32,10 +32,11 @@ int main(int argc, char *argv[]){
     SDL_DestroyWindow(window);
     SDL_Quit();
 
+
     cpu cpu_ctx;
     char* file_name = "GAMES/GAMES/CAVE.ch8";
-    dump_game_content(file_name);
-    test();
-    // debugger(&cpu_ctx);
+    // dump_game_content(file_name);
+    // test();
+    debugger(&cpu_ctx);
     return 0;
 } 

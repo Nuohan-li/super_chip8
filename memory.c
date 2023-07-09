@@ -5,8 +5,7 @@
 #include "cpu.h"
 
 void memory_init(memory *mem){
-    memset(mem, 0, CHIP8_RAM_SIZE_BYTES);
-    memset(mem->stack, 0, 16);
+    memset(mem, 0, sizeof(memory));
 }
 
 void memory_set(memory *mem, int address, uint8_t value){

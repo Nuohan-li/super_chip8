@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include "cpu.h"
 #include "display.h"
+#include "disassembler.h"
 
 const uint8_t default_character_set[] = {
     0xf0, 0x90, 0x90, 0x90, 0xf0, // 0
@@ -64,107 +65,148 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
     int y;
     int kk;
     int n;
+    
+    Instruction instr = decode(opcode);
+    
+    switch (instr) {
+        case OP_00E0:
+            // Clear the display
+            break;
 
-    if (opcode == 0x00E0) {
-        cls_display(cpu_ctx);
-    } 
-    else if (opcode == 0x00EE) {
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0x1000) { // 1nnn
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0x2000) { // 2nnn 
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0x3000) { // 3xkk
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0x4000) { // 4xkk
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0x5000) { // 5xy0
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0x6000) { // 6xkk
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0x7000) { // 7xkk
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0x8000) { // 
-        uint16_t code = opcode & 0xF00F;
-        switch(code) {
-            case 0x8000: // 8xy0
-                return ;  
-            case 0x8001: // 8xy1
-                return ;  
-            case 0x8002: // 8xy2
-                return ;
-            case 0x8003: // 8xy3
-                return ;
-            case 0x8004: // 8xy4
-                return ;
-            case 0x8005: // 8xy5
-                return ;
-            case 0x8006: // 8xy6
-                return ;
-            case 0x8007: // 8xy7
-                return ;
-            case 0x800E: // 8xyE
-                return ;
-            default:
-                return ;
-        }
-    }
-    else if ((opcode & 0xF000) == 0x9000) { // 9xy0
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0xA000) { // Annn
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0xB000) { // Bnnn
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0xC000) { // Cxkk
-        return ;
-    }
-    else if ((opcode & 0xF000) == 0xD000) { // Dxyn
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xE09E) { // Ex9E
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xE0A1) { // ExA1
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xF007) { // Fx07
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xF00A) { // Fx0A
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xF015) { // Fx15
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xF018) { // Fx18
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xF01E) { // Fx1E
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xF029) { // Fx29
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xF033) { // Fx33
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xF055) { // Fx55
-        return ;
-    }
-    else if ((opcode & 0xF0FF) == 0xF065) { // Fx65
-        return ;
-    }
-  
-    return ;
+        case OP_00EE:
+            // Return from a subroutine
+            break;
+
+        case OP_1nnn:
+            // Jump to address nnn
+            break;
+
+        case OP_2nnn:
+            // Call subroutine at address nnn
+            break;
+
+        case OP_3xkk:
+            // Skip next instruction if Vx == kk
+            break;
+
+        case OP_4xkk:
+            // Skip next instruction if Vx != kk
+            break;
+
+        case OP_5xy0:
+            // Skip next instruction if Vx == Vy
+            break;
+
+        case OP_6xkk:
+            // Set Vx = kk
+            break;
+
+        case OP_7xkk:
+            // Set Vx = Vx + kk
+            break;
+
+        case OP_8xy0:
+            // Set Vx = Vy
+            break;
+
+        case OP_8xy1:
+            // Set Vx = Vx OR Vy
+            break;
+
+        case OP_8xy2:
+            // Set Vx = Vx AND Vy
+            break;
+
+        case OP_8xy3:
+            // Set Vx = Vx XOR Vy
+            break;
+
+        case OP_8xy4:
+            // Set Vx = Vx + Vy, set VF = carry
+            break;
+
+        case OP_8xy5:
+            // Set Vx = Vx - Vy, set VF = NOT borrow
+            break;
+
+        case OP_8xy6:
+            // Set Vx = Vx SHR 1
+            break;
+
+        case OP_8xy7:
+            // Set Vx = Vy - Vx, set VF = NOT borrow
+            break;
+
+        case OP_8xyE:
+            // Set Vx = Vx SHL 1
+            break;
+
+        case OP_9xy0:
+            // Skip next instruction if Vx != Vy
+            break;
+
+        case OP_Annn:
+            // Set I = nnn
+            break;
+
+        case OP_Bnnn:
+            // Jump to location nnn + V0
+            break;
+
+        case OP_Cxkk:
+            // Set Vx = random byte AND kk
+            break;
+
+        case OP_Dxyn:
+            // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision
+            break;
+
+        case OP_Ex9E:
+            // Skip next instruction if key with the value of Vx is pressed
+            break;
+
+        case OP_ExA1:
+            // Skip next instruction if key with the value of Vx is not pressed
+            break;
+
+        case OP_Fx07:
+            // Set Vx = delay timer value
+            break;
+
+        case OP_Fx0A:
+            // Wait for a key press, store the value of the key in Vx
+            break;
+
+        case OP_Fx15:
+            // Set delay timer = Vx
+            break;
+
+        case OP_Fx18:
+            // Set sound timer = Vx
+            break;
+
+        case OP_Fx1E:
+            // Set I = I + Vx
+            break;
+
+        case OP_Fx29:
+            // Set I = location of sprite for digit Vx
+            break;
+
+        case OP_Fx33:
+            // Store BCD representation of Vx in memory locations I, I+1, and I+2
+            break;
+
+        case OP_Fx55:
+            // Store registers V0 through Vx in memory starting at location I
+            break;
+
+        case OP_Fx65:
+            // Read registers V0 through Vx from memory starting at location I
+            break;
+
+        case UNKNOWN:
+            // Unknown instruction
+            break;
+    }    
 }
