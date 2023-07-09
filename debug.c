@@ -208,6 +208,16 @@ void debugger(cpu *cpu_ctx){
         // execute next instruction
         case 'n':
             break;
+        
+        // set break point
+        
+        // print break points
+        
+        // step into
+
+        // step through 
+
+        // run until next break point
 
         // print register
         case 'r':
