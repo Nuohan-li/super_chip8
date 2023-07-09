@@ -35,136 +35,6 @@ void load_game(cpu *cpu_ctx, uint8_t *game, size_t gamesize){
     cpu_ctx->program_counter = 512;
 }
 
-///////////////////////////////////////////////////////////////////////////////////
-// 
-//                          INSTRUCTIONS
-//
-//////////////////////////////////////////////////////////////////////////////////
-
-// 00E0
-void cls_display(cpu *cpu){
-    init_display(&cpu->display);
-}
-
-Instruction decode_opcode(uint16_t opcode) {
-    if (opcode == 0x00E0) {
-        return OP_00E0;
-    } 
-    else if (opcode == 0x00EE) {
-        return OP_00EE;
-    }
-    else if ((opcode & 0xF000) == 0x1000) {
-        return OP_1nnn;
-    }
-    else if ((opcode & 0xF000) == 0x2000) {
-        return OP_2nnn;
-    }
-    else if ((opcode & 0xF000) == 0x3000) {
-        return OP_3xkk;
-    }
-    else if ((opcode & 0xF000) == 0x4000) {
-        return OP_4xkk;
-    }
-    else if ((opcode & 0xF000) == 0x5000) {
-        return OP_5xy0;
-    }
-    else if ((opcode & 0xF000) == 0x6000) {
-        return OP_6xkk;
-    }
-    else if ((opcode & 0xF000) == 0x7000) {
-        return OP_7xkk;
-    }
-    else if ((opcode & 0xF000) == 0x8000) {
-        uint16_t code = opcode & 0xF00F;
-        switch(code) {
-            case 0x8000:
-                return OP_8xy0;
-            case 0x8001:
-                return OP_8xy1;
-            case 0x8002:
-                return OP_8xy2;
-            case 0x8003:
-                return OP_8xy3;
-            case 0x8004:
-                return OP_8xy4;
-            case 0x8005:
-                return OP_8xy5;
-            case 0x8006:
-                return OP_8xy6;
-            case 0x8007:
-                return OP_8xy7;
-            case 0x800E:
-                return OP_8xyE;
-            default:
-                return UNKNOWN_INSTRUCTION;
-        }
-    }
-    else if ((opcode & 0xF000) == 0x9000) {
-        return OP_9xy0;
-    }
-    else if ((opcode & 0xF000) == 0xA000) {
-        return OP_Annn;
-    }
-    else if ((opcode & 0xF000) == 0xB000) {
-        return OP_Bnnn;
-    }
-    else if ((opcode & 0xF000) == 0xC000) {
-        return OP_Cxkk;
-    }
-    else if ((opcode & 0xF000) == 0xD000) {
-        return OP_Dxyn;
-    }
-    else if ((opcode & 0xF0FF) == 0xE09E) {
-        return OP_Ex9E;
-    }
-    else if ((opcode & 0xF0FF) == 0xE0A1) {
-        return OP_ExA1;
-    }
-    else if ((opcode & 0xF0FF) == 0xF007) {
-        return OP_Fx07;
-    }
-    else if ((opcode & 0xF0FF) == 0xF00A) {
-        return OP_Fx0A;
-    }
-    else if ((opcode & 0xF0FF) == 0xF015) {
-        return OP_Fx15;
-    }
-    else if ((opcode & 0xF0FF) == 0xF018) {
-        return OP_Fx18;
-    }
-    else if ((opcode & 0xF0FF) == 0xF01E) {
-        return OP_Fx1E;
-    }
-    else if ((opcode & 0xF0FF) == 0xF029) {
-        return OP_Fx29;
-    }
-    else if ((opcode & 0xF0FF) == 0xF033) {
-        return OP_Fx33;
-    }
-    else if ((opcode & 0xF0FF) == 0xF055) {
-        return OP_Fx55;
-    }
-    else if ((opcode & 0xF0FF) == 0xF065) {
-        return OP_Fx65;
-    }
-  
-    return UNKNOWN_INSTRUCTION;
-}
-
-
-void execute_opcode(cpu *cpu_ctx, uint16_t opcode){
-    printf("Executing opcode: %04X\n", opcode);
-    Instruction decoded_opcode = decode_opcode(opcode);
-    switch (decoded_opcode){
-    case OP_00E0:
-        cls_display(&cpu_ctx->display);
-        break;
-    
-    default:
-        break;
-    }
-}
-
 void push(cpu *cpu, uint16_t value){
     cpu->memory.stack[cpu->stack_pointer] = value;
     cpu->stack_pointer++;
@@ -174,4 +44,127 @@ uint16_t pop(cpu *cpu){
     uint16_t value = cpu->memory.stack[cpu->stack_pointer];
     cpu->stack_pointer--;
     return value;
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+// 
+//                          INSTRUCTIONS
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+// 00E0
+void cls_display(cpu *cpu_ctx){
+    init_display(&cpu_ctx->display);
+}
+
+void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
+    printf("Executing opcode: %04X\n", opcode);
+    int nnn;
+    int x;
+    int y;
+    int kk;
+    int n;
+
+    if (opcode == 0x00E0) {
+        cls_display(cpu_ctx);
+    } 
+    else if (opcode == 0x00EE) {
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0x1000) { // 1nnn
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0x2000) { // 2nnn 
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0x3000) { // 3xkk
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0x4000) { // 4xkk
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0x5000) { // 5xy0
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0x6000) { // 6xkk
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0x7000) { // 7xkk
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0x8000) { // 
+        uint16_t code = opcode & 0xF00F;
+        switch(code) {
+            case 0x8000: // 8xy0
+                return ;  
+            case 0x8001: // 8xy1
+                return ;  
+            case 0x8002: // 8xy2
+                return ;
+            case 0x8003: // 8xy3
+                return ;
+            case 0x8004: // 8xy4
+                return ;
+            case 0x8005: // 8xy5
+                return ;
+            case 0x8006: // 8xy6
+                return ;
+            case 0x8007: // 8xy7
+                return ;
+            case 0x800E: // 8xyE
+                return ;
+            default:
+                return ;
+        }
+    }
+    else if ((opcode & 0xF000) == 0x9000) { // 9xy0
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0xA000) { // Annn
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0xB000) { // Bnnn
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0xC000) { // Cxkk
+        return ;
+    }
+    else if ((opcode & 0xF000) == 0xD000) { // Dxyn
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xE09E) { // Ex9E
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xE0A1) { // ExA1
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xF007) { // Fx07
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xF00A) { // Fx0A
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xF015) { // Fx15
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xF018) { // Fx18
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xF01E) { // Fx1E
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xF029) { // Fx29
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xF033) { // Fx33
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xF055) { // Fx55
+        return ;
+    }
+    else if ((opcode & 0xF0FF) == 0xF065) { // Fx65
+        return ;
+    }
+  
+    return ;
 }
