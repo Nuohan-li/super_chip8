@@ -36,6 +36,6 @@ int main(int argc, char *argv[]){
     char* file_name = "GAMES/GAMES/CAVE.ch8";
     dump_game_content(file_name);
     test();
-    debugger(&cpu_ctx);
+    // debugger(&cpu_ctx);
     return 0;
 } 

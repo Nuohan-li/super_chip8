@@ -35,37 +35,143 @@ void load_game(cpu *cpu_ctx, uint8_t *game, size_t gamesize){
     cpu_ctx->program_counter = 512;
 }
 
+///////////////////////////////////////////////////////////////////////////////////
+// 
+//                          INSTRUCTIONS
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+// 00E0
+void cls_display(cpu *cpu){
+    init_display(&cpu->display);
+}
+
+Instruction decode_opcode(uint16_t opcode) {
+    if (opcode == 0x00E0) {
+        return OP_00E0;
+    } 
+    else if (opcode == 0x00EE) {
+        return OP_00EE;
+    }
+    else if ((opcode & 0xF000) == 0x1000) {
+        return OP_1nnn;
+    }
+    else if ((opcode & 0xF000) == 0x2000) {
+        return OP_2nnn;
+    }
+    else if ((opcode & 0xF000) == 0x3000) {
+        return OP_3xkk;
+    }
+    else if ((opcode & 0xF000) == 0x4000) {
+        return OP_4xkk;
+    }
+    else if ((opcode & 0xF000) == 0x5000) {
+        return OP_5xy0;
+    }
+    else if ((opcode & 0xF000) == 0x6000) {
+        return OP_6xkk;
+    }
+    else if ((opcode & 0xF000) == 0x7000) {
+        return OP_7xkk;
+    }
+    else if ((opcode & 0xF000) == 0x8000) {
+        uint16_t code = opcode & 0xF00F;
+        switch(code) {
+            case 0x8000:
+                return OP_8xy0;
+            case 0x8001:
+                return OP_8xy1;
+            case 0x8002:
+                return OP_8xy2;
+            case 0x8003:
+                return OP_8xy3;
+            case 0x8004:
+                return OP_8xy4;
+            case 0x8005:
+                return OP_8xy5;
+            case 0x8006:
+                return OP_8xy6;
+            case 0x8007:
+                return OP_8xy7;
+            case 0x800E:
+                return OP_8xyE;
+            default:
+                return UNKNOWN_INSTRUCTION;
+        }
+    }
+    else if ((opcode & 0xF000) == 0x9000) {
+        return OP_9xy0;
+    }
+    else if ((opcode & 0xF000) == 0xA000) {
+        return OP_Annn;
+    }
+    else if ((opcode & 0xF000) == 0xB000) {
+        return OP_Bnnn;
+    }
+    else if ((opcode & 0xF000) == 0xC000) {
+        return OP_Cxkk;
+    }
+    else if ((opcode & 0xF000) == 0xD000) {
+        return OP_Dxyn;
+    }
+    else if ((opcode & 0xF0FF) == 0xE09E) {
+        return OP_Ex9E;
+    }
+    else if ((opcode & 0xF0FF) == 0xE0A1) {
+        return OP_ExA1;
+    }
+    else if ((opcode & 0xF0FF) == 0xF007) {
+        return OP_Fx07;
+    }
+    else if ((opcode & 0xF0FF) == 0xF00A) {
+        return OP_Fx0A;
+    }
+    else if ((opcode & 0xF0FF) == 0xF015) {
+        return OP_Fx15;
+    }
+    else if ((opcode & 0xF0FF) == 0xF018) {
+        return OP_Fx18;
+    }
+    else if ((opcode & 0xF0FF) == 0xF01E) {
+        return OP_Fx1E;
+    }
+    else if ((opcode & 0xF0FF) == 0xF029) {
+        return OP_Fx29;
+    }
+    else if ((opcode & 0xF0FF) == 0xF033) {
+        return OP_Fx33;
+    }
+    else if ((opcode & 0xF0FF) == 0xF055) {
+        return OP_Fx55;
+    }
+    else if ((opcode & 0xF0FF) == 0xF065) {
+        return OP_Fx65;
+    }
+  
+    return UNKNOWN_INSTRUCTION;
+}
+
+
 void execute_opcode(cpu *cpu_ctx, uint16_t opcode){
     printf("Executing opcode: %04X\n", opcode);
-    int first_digit = (opcode >> 12);
-    int x = (opcode >> 8) & 0x000F; 
-    int kk = opcode & 0xFF;
-    switch(first_digit){
-        // I think I will remove case 0 since the only intructions that begin with 00E0 and 00EE
-        // they are static, and do not contain values that may change
-        case 0x00E0:
-            break;
-        case 0x00EE:
-            break;
-        // case 0:
-        //     break;
-        case 1:
-            break;
-        case 2:
-            break;
-        case 3:
-            break;
-        case 4:
-            break;
-        case 5:
-            break;
-        case 6: {
-            
-            cpu_ctx->V[x] = kk;
-        }
+    Instruction decoded_opcode = decode_opcode(opcode);
+    switch (decoded_opcode){
+    case OP_00E0:
+        cls_display(&cpu_ctx->display);
+        break;
+    
+    default:
+        break;
     }
 }
 
-// void CLS_00E0(display *screen){
-//     init_display(screen);
-// }
+void push(cpu *cpu, uint16_t value){
+    cpu->memory.stack[cpu->stack_pointer] = value;
+    cpu->stack_pointer++;
+}
+
+uint16_t pop(cpu *cpu){
+    uint16_t value = cpu->memory.stack[cpu->stack_pointer];
+    cpu->stack_pointer--;
+    return value;
+}

@@ -170,5 +170,8 @@ void test(){
     cpu_ctx.I = 0x9870;
     cpu_ctx.stack_pointer = 0x12;
     dump_register_content(&cpu_ctx);
+
+    // CPU execute opcode
+    execute_opcode(&cpu_ctx, 0x00E0);
     printf("\n\n");
 }
