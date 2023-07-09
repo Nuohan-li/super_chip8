@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "cpu.h"
+#include "display.h"
 
 const uint8_t default_character_set[] = {
     0xf0, 0x90, 0x90, 0x90, 0xf0, // 0
@@ -64,3 +65,7 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode){
         }
     }
 }
+
+// void CLS_00E0(display *screen){
+//     init_display(screen);
+// }

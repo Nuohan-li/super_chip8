@@ -20,6 +20,7 @@ typedef struct input{
     char keys[16];
 }input;
 
+
 // this function resets all keys' state to RELEASED and load the SDL key sets for CHIP8 into keys array
 void init_keyboard(input *inp, char *sdl_keys);
 

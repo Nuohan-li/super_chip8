@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include "cpu.h"
 
 #define CHIP8_RAM_SIZE_BYTES 4096
 #define GAME_MEM_SPACE_BEGINNING 512
@@ -24,6 +25,6 @@ uint8_t memory_get_one_byte(memory *mem, int address);
 // this function returns two bytes of memory content beginning at "address"
 uint16_t memory_get_two_bytes(memory *mem, int address);
 
-void push(memory *mem, uint16_t value);
+void push(cpu *cpu, uint16_t value);
 
-uint16_t pop(memory *mem);
+uint16_t pop(cpu *cpu);
