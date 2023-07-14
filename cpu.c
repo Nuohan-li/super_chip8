@@ -42,9 +42,8 @@ void push(cpu *cpu, uint16_t value){
 }
 
 uint16_t pop(cpu *cpu){
-    uint16_t value = cpu->memory.stack[cpu->stack_pointer];
     cpu->stack_pointer--;
-    return value;
+    return cpu->memory.stack[cpu->stack_pointer];
 }
 
 ///////////////////////////////////////////////////////////////////////////////////

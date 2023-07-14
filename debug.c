@@ -225,6 +225,7 @@ void debugger(cpu *cpu_ctx){
             break;
         // prints registers and memory contents around instruction
         case 'm':
+            sscanf(input, "%*s %d", &address);
             dump_registers_and_memory(cpu_ctx, address);
             break;
         default:
@@ -272,6 +273,19 @@ void test(){
     // CPU execute opcode
     execute_opcode(&cpu_ctx, 0x00E0);
     printf("\n\n");
+
+    // Stack test 
+    push(&cpu_ctx, 0x12);
+    push(&cpu_ctx, 0x34);
+    push(&cpu_ctx, 0x56);
+
+    // Pop values from the stack
+    uint8_t value1 = pop(&cpu_ctx);
+    uint8_t value2 = pop(&cpu_ctx);
+    uint8_t value5 = pop(&cpu_ctx);
+    
+    // Print the popped values
+    printf("Popped Values: 0x%02X, 0x%02X, 0x%02X\n", value1, value2, value5);
 }
 
 
