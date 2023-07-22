@@ -47,7 +47,9 @@ uint16_t pop(cpu *cpu){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-// 
+//void
+
+
 //                          INSTRUCTIONS
 //
 //////////////////////////////////////////////////////////////////////////////////
@@ -95,25 +97,30 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
         case OP_5xy0:
             // Skip next instruction if Vx == Vy
             break;
-
+        //my current change.
         case OP_6xkk:
             // Set Vx = kk
+            cpu_ctx->V[x] = kk;
             break;
 
         case OP_7xkk:
             // Set Vx = Vx + kk
+            cpu_ctx->V[x] += kk;
             break;
 
         case OP_8xy0:
             // Set Vx = Vy
+            cpu_ctx->V[x] = cpu_ctx->V[y];
             break;
 
         case OP_8xy1:
             // Set Vx = Vx OR Vy
+            cpu_ctx->V[x] = (cpu_ctx->V[x] | cpu_ctx->V[y]);
             break;
 
         case OP_8xy2:
             // Set Vx = Vx AND Vy
+            cpu_ctx->V[x] = (cpu_ctx->V[x] & cpu_ctx->V[y]);
             break;
 
         case OP_8xy3:
