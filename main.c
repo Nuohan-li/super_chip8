@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "cpu.h"
 #include "debug.h"
+#include <pthread.h>
 
 #ifdef __linux__ 
     #include<SDL2/SDL.h>
@@ -11,13 +12,12 @@
     #include <SDL2/SDL.h>
 #endif
 
-int main(int argc, char *argv[]){
-    
+void *run_game(){
     SDL_Init(SDL_INIT_EVERYTHING);
     SDL_Window *window = SDL_CreateWindow("SDL Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 320, SDL_WINDOW_ALLOW_HIGHDPI);
     if (window == NULL) {
         printf("SDL_CreateWindow error: %s\n", SDL_GetError());
-        return 1;
+        return NULL;
     }
 
     SDL_Event event;
@@ -31,12 +31,31 @@ int main(int argc, char *argv[]){
     }
     SDL_DestroyWindow(window);
     SDL_Quit();
+}
 
-
+void run_debugger(){
+    // debugger(cpu_ctx);
     cpu cpu_ctx;
+
+    pthread_t game_thread;
+    pthread_t debugger_thread;
+
+    // Create threads for game and debugger
+    pthread_create(&game_thread, NULL, run_game, NULL);
+    pthread_create(&debugger_thread, NULL, debugger, (void *)&cpu_ctx);
+
+    // Wait for both threads to finish
+    pthread_join(game_thread, NULL);
+    pthread_join(debugger_thread, NULL);
+}
+
+int main(int argc, char *argv[]){
+    
+    
     char* file_name = "GAMES/GAMES/CAVE.ch8";
     // dump_game_content(file_name);
-    test();
-    debugger(&cpu_ctx);
+
+    run_debugger();
+    
     return 0;
 } 

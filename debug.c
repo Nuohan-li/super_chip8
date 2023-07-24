@@ -228,6 +228,10 @@ void debugger(cpu *cpu_ctx){
             sscanf(input, "%*s %d", &address);
             dump_registers_and_memory(cpu_ctx, address);
             break;
+        // run test cases
+        case 't':
+            test();
+            break;
         default:
             printf("Invalid command\n");
             break;
