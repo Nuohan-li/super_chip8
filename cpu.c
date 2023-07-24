@@ -47,7 +47,9 @@ uint16_t pop(cpu *cpu){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-// 
+//void
+
+
 //                          INSTRUCTIONS
 //
 //////////////////////////////////////////////////////////////////////////////////
@@ -95,25 +97,41 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
         case OP_5xy0:
             // Skip next instruction if Vx == Vy
             break;
-
+        //my current change.
         case OP_6xkk:
             // Set Vx = kk
+            kk = (opcode & 0x00FF);
+            x = (opcode & 0x0F00) >> 8;
+            cpu_ctx->V[x] = kk;
             break;
 
         case OP_7xkk:
             // Set Vx = Vx + kk
+            kk = (opcode & 0x00FF);
+            x = (opcode & 0x0F00) >> 8;
+            cpu_ctx->V[x] += kk;
             break;
 
         case OP_8xy0:
             // Set Vx = Vy
+            kk = (opcode & 0x00F0);
+            x = (opcode & 0x0F00) >> 8;
+            y = (opcode & 0x00F0) >> 4;
+            cpu_ctx->V[x] = cpu_ctx->V[y];
             break;
 
         case OP_8xy1:
             // Set Vx = Vx OR Vy
+            x = (opcode & 0x0F00) >> 8;
+            y = (opcode & 0x00F0) >> 4;
+            cpu_ctx->V[x] = (cpu_ctx->V[x] | cpu_ctx->V[y]);
             break;
 
         case OP_8xy2:
             // Set Vx = Vx AND Vy
+            x = (opcode & 0x0F00) >> 8;
+            y = (opcode & 0x00F0) >> 4;
+            cpu_ctx->V[x] = (cpu_ctx->V[x] & cpu_ctx->V[y]);
             break;
 
         case OP_8xy3:
