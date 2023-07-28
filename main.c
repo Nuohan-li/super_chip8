@@ -26,6 +26,12 @@ void *run_game(){
         if(SDL_PollEvent(&event)){
             if(event.type == SDL_QUIT){
                 break;
+            } else if(event.type == SDL_KEYDOWN){
+                char key = event.key.keysym.sym;
+                printf("%c pressed\n", key);
+            } else if(event.type == SDL_KEYUP){
+                char key = event.key.keysym.sym;
+                printf("%c released\n", key);
             }
         }
     }
@@ -33,7 +39,7 @@ void *run_game(){
     SDL_Quit();
 }
 
-void run_debugger(){
+void run_with_debugger(){
     // debugger(cpu_ctx);
     cpu cpu_ctx;
 
@@ -54,8 +60,8 @@ int main(int argc, char *argv[]){
     
     char* file_name = "GAMES/GAMES/CAVE.ch8";
     // dump_game_content(file_name);
-
-    run_debugger();
+    run_game();
+    // run_with_debugger();
     
     return 0;
 } 
