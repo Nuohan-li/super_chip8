@@ -76,10 +76,14 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_00EE:
             // Return from a subroutine
+            cpu_ctx->program_counter = cpu_ctx->stack_pointer;
+            cpu_ctx->stack_pointer--;
             break;
 
         case OP_1nnn:
             // Jump to address nnn
+            nnn = opcode & 0x0FFF;
+            cpu_ctx->program_counter = nnn;
             break;
 
         case OP_2nnn:

@@ -171,6 +171,21 @@ void load_temp_opcode(cpu *cpu_ctx){
     load_game(cpu_ctx, (uint8_t *)test_instr, sizeof(test_instr));
 }
 
+// void exec_instr(int address){
+//     if(address < 512 || address > size + GAME_MEM_SPACE_BEGINNING){
+//         printf("You have stepped out of memory space allocated for game instructions\n");
+//         break;
+//     }
+//     if(address % 2 != 0){
+//         printf("Every instruction starts at even address\n");
+//         break;        
+//     }
+//     opcode = memory_get_two_bytes(&cpu_ctx->memory, address);
+//     execute_opcode(cpu_ctx, opcode);
+//     address += 2;
+// }
+
+
 void debugger(cpu *cpu_ctx){
     char *file_name = "GAMES/GAMES/15PUZZLE.ch8";
     FILE* f = fopen(file_name, "rb");  
@@ -182,6 +197,9 @@ void debugger(cpu *cpu_ctx){
     memory_init(&cpu_ctx->memory);
     load_game(cpu_ctx, game, size);
     // dump_memory(cpu_ctx->memory.ram, 4096);
+
+    uint8_t break_points[100] = { -1 };
+    int break_point_index = 0;
 
     uint16_t opcode = 0;
     char input[20];
@@ -207,6 +225,7 @@ void debugger(cpu *cpu_ctx){
             }
             opcode = memory_get_two_bytes(&cpu_ctx->memory, address);
             execute_opcode(cpu_ctx, opcode);
+            address += 2;
             break;
         // dump memory segments 
         case 'd':
@@ -224,14 +243,29 @@ void debugger(cpu *cpu_ctx){
             break;
         
         // set break point
-        
+        case 'b':
+            sscanf(input, "%*s %d", &address);
+            if(address < 512 || address > size + GAME_MEM_SPACE_BEGINNING){
+                printf("You have stepped out of memory space allocated for game instructions\n");
+                break;
+            }
+            if(address % 2 != 0){
+                printf("Every instruction starts at even address\n");
+                break;        
+            }
+            break_points[break_point_index] = address;
+            break_point_index++;
+            break;
+
         // print break points
         
-        // step into
+        // step into  ---- done e
 
-        // step through 
+        // step through  --- need to google
 
-        // run until next break point
+        // run until next break point 
+        case 's': // stands for start
+            break;
 
         // print register
         case 'r':
