@@ -159,7 +159,7 @@ void dump_game_content(char *file_name){
     // SEEK_SET returns the file pointer back to the beginning
     fseek(f, 0, SEEK_SET);
 
-    uint8_t game[size];
+    uint8_t *game;
     fread(game, size, 1, f);
     dump_memory(game, size);
 }
@@ -185,6 +185,30 @@ void load_temp_opcode(cpu *cpu_ctx){
 //     address += 2;
 // }
 
+uint32_t break_points[100] = { -1 };
+int break_point_num = 0;
+
+bool break_point_exist(uint32_t address){
+    for(int i = 0; i < break_point_num; i++){
+        if(break_points[i] == address){
+            return true;
+        }
+    }
+    return false;
+}
+
+void print_help(){
+    printf("execute an instruction at <addr> : e <addr>\n");
+    printf("print content of specified memory range : d <starting_addr> <number_of_bytes_to_print>\n");
+    printf("print game binary : g\n");
+    printf("execute next instruction : n --- not implemented yet\n");
+    printf("set break point for instruction at <addr> : b <addr>\n");
+    printf("print all break points : p \n");
+    printf("print register content : r\n");
+    printf("print register content and next 40 bytes of memory content starting from <addr> : m <addr>\n");
+    printf("load test opcodes : t\n");
+    printf("print help menu : h\n");
+}
 
 void debugger(cpu *cpu_ctx){
     char *file_name = "GAMES/GAMES/15PUZZLE.ch8";
@@ -192,18 +216,16 @@ void debugger(cpu *cpu_ctx){
     fseek(f, 0, SEEK_END);
     long size = ftell(f);
     fseek(f, 0, SEEK_SET);
-    uint8_t game[size];
+    uint8_t *game = (uint8_t *)malloc(size);
     fread(game, size, 1, f);
     memory_init(&cpu_ctx->memory);
     load_game(cpu_ctx, game, size);
+    free(game);
     // dump_memory(cpu_ctx->memory.ram, 4096);
-
-    uint8_t break_points[100] = { -1 };
-    int break_point_index = 0;
 
     uint16_t opcode = 0;
     char input[20];
-    int address = 512;
+    uint32_t address = 512;
     int size_to_dump = 0;
     // char game_name[50];
     printf("Debugging mode\n");
@@ -249,15 +271,25 @@ void debugger(cpu *cpu_ctx){
                 printf("You have stepped out of memory space allocated for game instructions\n");
                 break;
             }
+            if(break_point_exist(address)){
+                printf("This break point exists already\n");
+                break;
+            }
             if(address % 2 != 0){
                 printf("Every instruction starts at even address\n");
                 break;        
             }
-            break_points[break_point_index] = address;
-            break_point_index++;
+            break_points[break_point_num] = address;
+            break_point_num++;
             break;
 
         // print break points
+        case 'p':
+            printf("all break points\n");
+            for(int i = 0; i < break_point_num; i++){
+                printf("%u\n", break_points[i]);
+            }
+            break;
         
         // step into  ---- done e
 
@@ -280,8 +312,11 @@ void debugger(cpu *cpu_ctx){
         case 't':
             load_temp_opcode(cpu_ctx);
             break;
+        case 'h':
+            print_help();
+            break;
         default:
-            printf("Invalid command\n");
+            printf("Invalid command, type h to see help menu\n");
             break;
         }
     }
