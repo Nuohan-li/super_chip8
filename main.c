@@ -42,10 +42,12 @@ void *run_game(){
 int main(int argc, char *argv[]){
     char* file_name = "GAMES/GAMES/CAVE.ch8";
     cpu cpu_ctx;
+    cpu_init(&cpu_ctx);
     pthread_t debugger_thread;
     pthread_create(&debugger_thread, NULL, debugger, (void *)&cpu_ctx);
     run_game();
     pthread_join(debugger_thread, NULL);
+    // test();
     
     return 0;
 } 

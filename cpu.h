@@ -31,13 +31,15 @@ typedef struct cpu{
 } cpu;
 
 // initialize the CPU -> set everything to 0
-void cpu_init(cpu *cpu);
+void cpu_init(cpu *cpu_ctx);
 
 // load th game into the memory 
-void load_game(cpu *cpu, uint8_t *game, size_t gamesize);
+void load_game(cpu *cpu_ctx, uint8_t *game, size_t gamesize);
 
-void execute_opcode(cpu *cpu, uint16_t opcode);
+void execute_opcode(cpu *cpu_ctx, uint16_t opcode);
 
-void push(cpu *cpu, uint16_t value);
+void push(cpu *cpu_ctx, uint16_t value);
 
-uint16_t pop(cpu *cpu);
+uint16_t pop(cpu *cpu_ctx);
+
+void print_stack(cpu *cpu);

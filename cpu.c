@@ -28,6 +28,7 @@ const uint8_t default_character_set[] = {
 void cpu_init(cpu *cpu_ctx){
     memset(cpu_ctx, 0, sizeof(cpu));
     memcpy(cpu_ctx->memory.ram, default_character_set, sizeof(default_character_set));
+    cpu_ctx->stack_pointer = 16;
 }
 
 // memory space starts at 512 or 0x200 in the memory array 
@@ -36,20 +37,28 @@ void load_game(cpu *cpu_ctx, uint8_t *game, size_t gamesize){
     cpu_ctx->program_counter = 512;
 }
 
-void push(cpu *cpu, uint16_t value){
-    cpu->memory.stack[cpu->stack_pointer] = value;
-    cpu->stack_pointer++;
+void push(cpu *cpu_ctx, uint16_t value){
+    cpu_ctx->stack_pointer--;
+    cpu_ctx->memory.stack[cpu_ctx->stack_pointer] = value;
 }
 
-uint16_t pop(cpu *cpu){
-    cpu->stack_pointer--;
-    return cpu->memory.stack[cpu->stack_pointer];
+uint16_t pop(cpu *cpu_ctx){
+    uint16_t item = cpu_ctx->memory.stack[cpu_ctx->stack_pointer];
+    // propbably not necessary as this will simply be over written when stack pointer moves here again 
+    // but it makes printing stack better
+    cpu_ctx->memory.stack[cpu_ctx->stack_pointer] = 0; 
+    cpu_ctx->stack_pointer++;
+    return item;
+}
+
+void print_stack(cpu *cpu_ctx){
+    for(int i = 15; i >= 0; i--){
+        printf("0x%04X: %04X\n", i, cpu_ctx->memory.stack[i]);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
-//void
-
-
+//
 //                          INSTRUCTIONS
 //
 //////////////////////////////////////////////////////////////////////////////////
