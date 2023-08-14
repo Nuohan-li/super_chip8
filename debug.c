@@ -8,7 +8,7 @@
 
 
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    #define LE16TOBE16(value) ((value) >> 8) | ((value) << 8)
+    #define LE16TOBE16(value) ((value >> 8) | (value << 8))
 #else 
     #define LE16TOBE16(value) value
 #endif
@@ -165,26 +165,27 @@ void dump_game_content(char *file_name){
     dump_memory(game, size);
 }
 
-void load_temp_opcode(cpu *cpu_ctx){
+// 0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232 five random instructions to update values in register
 
-    uint16_t test_instr[5] = { LE16TOBE16(0x6102), LE16TOBE16(0x75F1),  LE16TOBE16(0x8A10), LE16TOBE16(0x8121), LE16TOBE16(0x8232)};
+
+void load_temp_opcode(cpu *cpu_ctx){
+    uint16_t test_instr[] = { 
+        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x1202, // 0x1202 sets PC = 0x202
+        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x2200, // 0x2204 pushes old PC to stack and then sets PC to 0x200
+        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x00ee, // 0x00ee pops and set PC to popped value (BX LR)
+        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x3102, // 0x3102 -> if V1 = 02, PC += 2 
+        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x3122, // 0x3122 -> if V1 = 22, PC += 2
+        0x6302, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x4122, // 0x4122 -> if V1 != 22, PC += 2
+        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x4102, // 0x4102 -> if V1 != 02, PC += 2
+        0x6102, 0x6202,  0x8A10, 0x8121, 0x8232, 0x5120, // 0x5120 -> if V1 = V2, PC += 2 
+        0x6102, 0x6212,  0x8A10, 0x8121, 0x8232, 0x5120, // 0x5120 -> if V1 = V2, PC += 2 
+    };
+    for(int i = 0; i < sizeof(test_instr); i++){
+        test_instr[i] = LE16TOBE16(test_instr[i]);
+    }
     memory_init(&cpu_ctx->memory);
     load_game(cpu_ctx, (uint8_t *)test_instr, sizeof(test_instr));
 }
-
-// void exec_instr(int address){
-//     if(address < 512 || address > size + GAME_MEM_SPACE_BEGINNING){
-//         printf("You have stepped out of memory space allocated for game instructions\n");
-//         break;
-//     }
-//     if(address % 2 != 0){
-//         printf("Every instruction starts at even address\n");
-//         break;        
-//     }
-//     opcode = memory_get_two_bytes(&cpu_ctx->memory, address);
-//     execute_opcode(cpu_ctx, opcode);
-//     address += 2;
-// }
 
 uint32_t break_points[100] = { -1 };
 int break_point_num = 0;
