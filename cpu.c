@@ -97,18 +97,36 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_2nnn:
             // Call subroutine at address nnn
+            nnn = (opcode & 0xFFF);
+            cpu_ctx->stack_pointer++;
+            cpu_ctx->memory.stack[cpu_ctx->program_counter];
+            cpu_ctx->program_counter = nnn;
             break;
 
         case OP_3xkk:
             // Skip next instruction if Vx == kk
+            kk = (opcode & 0x00FF);
+            x = (opcode & 0x0F00) >> 8;
+            if(cpu_ctx->V[x] == kk){
+            cpu_ctx->program_counter += 2;
             break;
 
         case OP_4xkk:
             // Skip next instruction if Vx != kk
+            kk = (opcode & 0x00FF);
+            x = (opcode & 0x0F00) >> 8;
+            if(cpu_ctx->V[x] != kk){
+                cpu_ctx->program_counter +=2;
             break;
 
         case OP_5xy0:
             // Skip next instruction if Vx == Vy
+            kk = (opcode & 0x00FF);
+            x = (opcode & 0x0F00) >> 8;
+            y = (opcode & 0x00F0) >> 4;
+            if(cpu_ctx->V[x] == cpu_ctx->V[y]){
+                cpu_ctx->program_counter +=2;
+            }
             break;
         //my current change.
         case OP_6xkk:
