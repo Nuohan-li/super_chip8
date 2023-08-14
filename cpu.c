@@ -70,11 +70,11 @@ void cls_display(cpu *cpu_ctx){
 
 void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
     printf("Executing opcode: %04X\n", opcode);
-    int nnn;
-    int x;
-    int y;
-    int kk;
-    int n;
+    int nnn = (opcode & 0xFFF);
+    int x = (opcode & 0x0F00) >> 8;
+    int y = (opcode & 0x00F0) >> 4;
+    int kk = (opcode & 0x00FF);
+    int n = (opcode & 0x000F);
     
     Instruction instr = decode(opcode);
     
@@ -85,45 +85,36 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_00EE:
             // Return from a subroutine
-            cpu_ctx->program_counter = cpu_ctx->stack_pointer;
-            cpu_ctx->stack_pointer--;
+            cpu_ctx->program_counter = pop(cpu_ctx);
             break;
 
         case OP_1nnn:
             // Jump to address nnn
-            nnn = opcode & 0x0FFF;
             cpu_ctx->program_counter = nnn;
             break;
 
         case OP_2nnn:
             // Call subroutine at address nnn
-            nnn = (opcode & 0xFFF);
-            cpu_ctx->stack_pointer++;
-            cpu_ctx->memory.stack[cpu_ctx->program_counter];
+            push(cpu_ctx, cpu_ctx->program_counter);
             cpu_ctx->program_counter = nnn;
             break;
 
         case OP_3xkk:
             // Skip next instruction if Vx == kk
-            kk = (opcode & 0x00FF);
-            x = (opcode & 0x0F00) >> 8;
             if(cpu_ctx->V[x] == kk){
-            cpu_ctx->program_counter += 2;
+                cpu_ctx->program_counter += 2;
+            }
             break;
 
         case OP_4xkk:
             // Skip next instruction if Vx != kk
-            kk = (opcode & 0x00FF);
-            x = (opcode & 0x0F00) >> 8;
             if(cpu_ctx->V[x] != kk){
                 cpu_ctx->program_counter +=2;
+            }
             break;
 
         case OP_5xy0:
             // Skip next instruction if Vx == Vy
-            kk = (opcode & 0x00FF);
-            x = (opcode & 0x0F00) >> 8;
-            y = (opcode & 0x00F0) >> 4;
             if(cpu_ctx->V[x] == cpu_ctx->V[y]){
                 cpu_ctx->program_counter +=2;
             }
@@ -131,37 +122,26 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
         //my current change.
         case OP_6xkk:
             // Set Vx = kk
-            kk = (opcode & 0x00FF);
-            x = (opcode & 0x0F00) >> 8;
             cpu_ctx->V[x] = kk;
             break;
 
         case OP_7xkk:
             // Set Vx = Vx + kk
-            kk = (opcode & 0x00FF);
-            x = (opcode & 0x0F00) >> 8;
             cpu_ctx->V[x] += kk;
             break;
 
         case OP_8xy0:
             // Set Vx = Vy
-            kk = (opcode & 0x00F0);
-            x = (opcode & 0x0F00) >> 8;
-            y = (opcode & 0x00F0) >> 4;
             cpu_ctx->V[x] = cpu_ctx->V[y];
             break;
 
         case OP_8xy1:
             // Set Vx = Vx OR Vy
-            x = (opcode & 0x0F00) >> 8;
-            y = (opcode & 0x00F0) >> 4;
             cpu_ctx->V[x] = (cpu_ctx->V[x] | cpu_ctx->V[y]);
             break;
 
         case OP_8xy2:
             // Set Vx = Vx AND Vy
-            x = (opcode & 0x0F00) >> 8;
-            y = (opcode & 0x00F0) >> 4;
             cpu_ctx->V[x] = (cpu_ctx->V[x] & cpu_ctx->V[y]);
             break;
 
@@ -256,5 +236,5 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
         case UNKNOWN:
             // Unknown instruction
             break;
-    }    
+    }   
 }
