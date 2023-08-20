@@ -155,10 +155,21 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_8xy3:
             // Set Vx = Vx XOR Vy
+            x = (opcode & 0x0F00)>>8;
+            y = (opcode & 0x0F00)>>4;
+            cpu_ctx->V[x]= (cpu_ctx->V[x] ^ cpu_ctx->V[y]);
             break;
 
         case OP_8xy4:
             // Set Vx = Vx + Vy, set VF = carry
+            x = (opcode &0x0F00) >> 8;
+            y = (opcode & 0x00F0) >> 4;
+            if ((cpu_ctx->V[x] + cpu_ctx->V[y])>0xFF){
+                cpu_ctx->V[0xF] = 1;
+            }else{
+                cpu_ctx->V[0xF] = 0;
+            }
+            cpu_ctx->V[x] =0xFF&(cpu_ctx->V[x] + cpu_ctx->V[y]);
             break;
 
         case OP_8xy5:
@@ -187,10 +198,14 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_Bnnn:
             // Jump to location nnn + V0
+            nnn = opcode & 0x0FFF;
+            cpu_ctx->program_counter= cpu_ctx->V[0x0]+nnn;
             break;
 
         case OP_Cxkk:
             // Set Vx = random byte AND kk
+            x = (opcode& 0x0F00)>>8;
+            cpu_ctx->V[x] = rand(0xFF) & kk;
             break;
 
         case OP_Dxyn:
