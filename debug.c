@@ -99,51 +99,51 @@ decoded_instr disassemble(cpu *cpu_ctx, int address){
 }
 
 void dump_registers_and_memory(cpu *cpu_ctx, int address){
-    printf("Printing CPU internal state, all numbers except for memory addresses are in hex\n");
+    printf("Printing CPU internal state, all numbers in hex\n");
     printf("REGISTERS        MEMORY                                                                                                   STACK\n");
     printf("Reg   value      loc       value     disassembled opcode                                                                  loc     value\n");
     printf("------------     ---------------------------------------------------------------------------------------------------      -----------------\n");
-    printf("V0:     %02X       %u:      %02X%02X      %s0F      %04X\n", 
+    printf("V0:     %02X       %04X:      %02X%02X      %s0F      %04X\n", 
         cpu_ctx->V[0], address, cpu_ctx->memory.ram[address], cpu_ctx->memory.ram[address+1], disassemble(cpu_ctx, address).chip8_instr, cpu_ctx->memory.stack[15]);
-    printf("V1:     %02X       %u:      %02X%02X      %s0E      %04X\n", 
+    printf("V1:     %02X       %04X:      %02X%02X      %s0E      %04X\n", 
         cpu_ctx->V[1], address+2, cpu_ctx->memory.ram[address+2], cpu_ctx->memory.ram[address+3], disassemble(cpu_ctx, address+2).chip8_instr, cpu_ctx->memory.stack[14]);
-    printf("V2:     %02X       %u:      %02X%02X      %s0D      %04X\n", 
+    printf("V2:     %02X       %04X:      %02X%02X      %s0D      %04X\n", 
         cpu_ctx->V[2], address+4, cpu_ctx->memory.ram[address+4], cpu_ctx->memory.ram[address+5], disassemble(cpu_ctx, address+4).chip8_instr, cpu_ctx->memory.stack[13]);
-    printf("V3:     %02X       %u:      %02X%02X      %s0C      %04X\n", 
+    printf("V3:     %02X       %04X:      %02X%02X      %s0C      %04X\n", 
         cpu_ctx->V[3], address+6, cpu_ctx->memory.ram[address+6], cpu_ctx->memory.ram[address+7], disassemble(cpu_ctx, address+6).chip8_instr, cpu_ctx->memory.stack[12]);
-    printf("V4:     %02X       %u:      %02X%02X      %s0B      %04X\n", 
+    printf("V4:     %02X       %04X:      %02X%02X      %s0B      %04X\n", 
         cpu_ctx->V[4], address+8, cpu_ctx->memory.ram[address+8], cpu_ctx->memory.ram[address+9], disassemble(cpu_ctx, address+8).chip8_instr, cpu_ctx->memory.stack[11]);
-    printf("V5:     %02X       %u:      %02X%02X      %s0A      %04X\n", 
+    printf("V5:     %02X       %04X:      %02X%02X      %s0A      %04X\n", 
         cpu_ctx->V[5], address+10, cpu_ctx->memory.ram[address+10], cpu_ctx->memory.ram[address+11], disassemble(cpu_ctx, address+10).chip8_instr, cpu_ctx->memory.stack[10]);
-    printf("V6:     %02X       %u:      %02X%02X      %s09      %04X\n", 
+    printf("V6:     %02X       %04X:      %02X%02X      %s09      %04X\n", 
         cpu_ctx->V[6], address+12, cpu_ctx->memory.ram[address+12], cpu_ctx->memory.ram[address+13], disassemble(cpu_ctx, address+12).chip8_instr, cpu_ctx->memory.stack[9]);
-    printf("V7:     %02X       %u:      %02X%02X      %s08      %04X\n", 
+    printf("V7:     %02X       %04X:      %02X%02X      %s08      %04X\n", 
         cpu_ctx->V[7], address+14, cpu_ctx->memory.ram[address+14], cpu_ctx->memory.ram[address+15], disassemble(cpu_ctx, address+14).chip8_instr, cpu_ctx->memory.stack[8]);
-    printf("V8:     %02X       %u:      %02X%02X      %s07      %04X\n", 
+    printf("V8:     %02X       %04X:      %02X%02X      %s07      %04X\n", 
         cpu_ctx->V[8], address+16, cpu_ctx->memory.ram[address+16], cpu_ctx->memory.ram[address+17], disassemble(cpu_ctx, address+16).chip8_instr, cpu_ctx->memory.stack[7]);
-    printf("V9:     %02X       %u:      %02X%02X      %s06      %04X\n", 
+    printf("V9:     %02X       %04X:      %02X%02X      %s06      %04X\n", 
         cpu_ctx->V[9], address+18, cpu_ctx->memory.ram[address+18], cpu_ctx->memory.ram[address+19], disassemble(cpu_ctx, address+18).chip8_instr, cpu_ctx->memory.stack[6]);
-    printf("V10:    %02X       %u:      %02X%02X      %s05      %04X\n", 
+    printf("V10:    %02X       %04X:      %02X%02X      %s05      %04X\n", 
         cpu_ctx->V[10], address+20, cpu_ctx->memory.ram[address+20], cpu_ctx->memory.ram[address+21], disassemble(cpu_ctx, address+20).chip8_instr, cpu_ctx->memory.stack[5]);
-    printf("V11:    %02X       %u:      %02X%02X      %s04      %04X\n", 
+    printf("V11:    %02X       %04X:      %02X%02X      %s04      %04X\n", 
         cpu_ctx->V[11], address+22, cpu_ctx->memory.ram[address+22], cpu_ctx->memory.ram[address+23], disassemble(cpu_ctx, address+22).chip8_instr, cpu_ctx->memory.stack[4]);
-    printf("V12:    %02X       %u:      %02X%02X      %s03      %04X\n", 
+    printf("V12:    %02X       %04X:      %02X%02X      %s03      %04X\n", 
         cpu_ctx->V[12], address+24, cpu_ctx->memory.ram[address+24], cpu_ctx->memory.ram[address+25], disassemble(cpu_ctx, address+24).chip8_instr, cpu_ctx->memory.stack[3]);
-    printf("V13:    %02X       %u:      %02X%02X      %s02      %04X\n", 
+    printf("V13:    %02X       %04X:      %02X%02X      %s02      %04X\n", 
         cpu_ctx->V[13], address+26, cpu_ctx->memory.ram[address+26], cpu_ctx->memory.ram[address+27], disassemble(cpu_ctx, address+26).chip8_instr, cpu_ctx->memory.stack[2]);
-    printf("V14:    %02X       %u:      %02X%02X      %s01      %04X\n", 
+    printf("V14:    %02X       %04X:      %02X%02X      %s01      %04X\n", 
         cpu_ctx->V[14], address+28, cpu_ctx->memory.ram[address+28], cpu_ctx->memory.ram[address+29], disassemble(cpu_ctx, address+28).chip8_instr, cpu_ctx->memory.stack[1]);
-    printf("V15:    %02X       %u:      %02X%02X      %s00      %04X\n", 
+    printf("V15:    %02X       %04X:      %02X%02X      %s00      %04X\n", 
         cpu_ctx->V[15], address+30, cpu_ctx->memory.ram[address+30], cpu_ctx->memory.ram[address+31], disassemble(cpu_ctx, address+30).chip8_instr, cpu_ctx->memory.stack[1]);
-    printf("I:      %04X     %u:      %02X%02X      %s\n", 
+    printf("I:      %04X     %04X:      %02X%02X      %s\n", 
         cpu_ctx->I, address+32, cpu_ctx->memory.ram[address+32], cpu_ctx->memory.ram[address+33], disassemble(cpu_ctx, address+32).chip8_instr);
-    printf("DT:     %02X       %u:      %02X%02X      %s\n", 
+    printf("DT:     %02X       %04X:      %02X%02X      %s\n", 
         cpu_ctx->delay_timer, address+34, cpu_ctx->memory.ram[address+34], cpu_ctx->memory.ram[address+35], disassemble(cpu_ctx, address+34).chip8_instr);
-    printf("ST:     %02X       %u:      %02X%02X      %s\n", 
+    printf("ST:     %02X       %04X:      %02X%02X      %s\n", 
         cpu_ctx->sound_timer, address+36, cpu_ctx->memory.ram[address+36], cpu_ctx->memory.ram[address+37], disassemble(cpu_ctx, address+36).chip8_instr);
-    printf("PC:     %04X     %u:      %02X%02X      %s\n", 
+    printf("PC:     %04X     %04X:      %02X%02X      %s\n", 
         cpu_ctx->program_counter, address+38, cpu_ctx->memory.ram[address+38], cpu_ctx->memory.ram[address+39], disassemble(cpu_ctx, address+38).chip8_instr);
-    printf("SP:     %02X       %u:      %02X%02X      %s\n", 
+    printf("SP:     %02X       %04X:      %02X%02X      %s\n", 
         cpu_ctx->stack_pointer, address+40, cpu_ctx->memory.ram[address+40], cpu_ctx->memory.ram[address+41], disassemble(cpu_ctx, address+40).chip8_instr);
 }
 
@@ -170,7 +170,7 @@ void dump_game_content(char *file_name){
 
 void load_temp_opcode(cpu *cpu_ctx){
     uint16_t test_instr[] = { 
-        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x1202, // 0x1202 sets PC = 0x202
+        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x1212, // 0x1212 sets PC = 0x212
         0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x2200, // 0x2204 pushes old PC to stack and then sets PC to 0x200
         0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x00ee, // 0x00ee pops and set PC to popped value (BX LR)
         0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x3102, // 0x3102 -> if V1 = 02, PC += 2 
@@ -203,7 +203,7 @@ void print_help(){
     printf("execute an instruction at <addr> : e <addr>\n");
     printf("print content of specified memory range : d <starting_addr> <number_of_bytes_to_print>\n");
     printf("print game binary : g\n");
-    printf("execute next instruction : n --- not implemented yet\n");
+    printf("execute next instruction : n\n");
     printf("set break point for instruction at <addr> : b <addr>\n");
     printf("print all break points : p \n");
     printf("print register content : r\n");
@@ -265,8 +265,16 @@ void debugger(cpu *cpu_ctx){
             dump_memory(&cpu_ctx->memory.ram[GAME_MEM_SPACE_BEGINNING], size);
             break;
         
-        // execute next instruction
+        // execute next instruction/step into
         case 'n':
+            opcode = memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter);
+            printf("Executing opcode: %04X\n", opcode);
+            execute_opcode(cpu_ctx, opcode);
+            address = cpu_ctx->program_counter;
+            printf("Next opcode: %04X - %s\n", 
+                    memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter), 
+                    disassemble(cpu_ctx, cpu_ctx->program_counter).chip8_instr
+            );
             break;
         
         // set break point
@@ -296,9 +304,9 @@ void debugger(cpu *cpu_ctx){
             }
             break;
         
-        // step into  ---- done e
+        // step into  ---- done, n or e
 
-        // step through  --- need to google
+        // step through  --- if next instruction is a call to a subroutine, skip it and move onto the next instruction
 
         // run until next break point 
         case 's': // stands for start
@@ -319,6 +327,7 @@ void debugger(cpu *cpu_ctx){
             break;
         // load test instructions 
         case 'l':
+            printf("Loading test instructions, game file will be overwritten\n");
             load_temp_opcode(cpu_ctx);
             break;
         case 'h':

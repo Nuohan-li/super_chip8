@@ -38,11 +38,19 @@ void load_game(cpu *cpu_ctx, uint8_t *game, size_t gamesize){
 }
 
 void push(cpu *cpu_ctx, uint16_t value){
+    if(cpu_ctx->stack_pointer <= 0){
+        printf("SP <= 0 -- SP = %u\n", cpu_ctx->stack_pointer);
+        return;
+    }
     cpu_ctx->stack_pointer--;
     cpu_ctx->memory.stack[cpu_ctx->stack_pointer] = value;
 }
 
 uint16_t pop(cpu *cpu_ctx){
+    if(cpu_ctx->stack_pointer >= 16){
+        printf("SP >= 16 -- SP = %u\n", cpu_ctx->stack_pointer);
+        return;
+    }
     uint16_t item = cpu_ctx->memory.stack[cpu_ctx->stack_pointer];
     // propbably not necessary as this will simply be over written when stack pointer moves here again 
     // but it makes printing stack better
@@ -69,7 +77,6 @@ void cls_display(cpu *cpu_ctx){
 }
 
 void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
-    printf("Executing opcode: %04X\n", opcode);
     int nnn = (opcode & 0xFFF);
     int x = (opcode & 0x0F00) >> 8;
     int y = (opcode & 0x00F0) >> 4;
@@ -77,6 +84,7 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
     int n = (opcode & 0x000F);
     
     Instruction instr = decode(opcode);
+    cpu_ctx->program_counter += 2;
     
     switch (instr) {
         case OP_00E0:
