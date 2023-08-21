@@ -49,7 +49,7 @@ void push(cpu *cpu_ctx, uint16_t value){
 uint16_t pop(cpu *cpu_ctx){
     if(cpu_ctx->stack_pointer >= 16){
         printf("SP >= 16 -- SP = %u\n", cpu_ctx->stack_pointer);
-        return;
+        return 0;
     }
     uint16_t item = cpu_ctx->memory.stack[cpu_ctx->stack_pointer];
     // propbably not necessary as this will simply be over written when stack pointer moves here again 
@@ -82,6 +82,7 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
     int y = (opcode & 0x00F0) >> 4;
     int kk = (opcode & 0x00FF);
     int n = (opcode & 0x000F);
+    int sig_bit = 0;
     
     Instruction instr = decode(opcode);
     cpu_ctx->program_counter += 2;
@@ -174,26 +175,75 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_8xy5:
             // Set Vx = Vx - Vy, set VF = NOT borrow
+            //If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+            if(cpu_ctx->V[x] > cpu_ctx->V[y]) {
+                cpu_ctx->V[0xF] = 1;
+            }
+            else {
+                cpu_ctx->V[0xF] = 0;
+            }
+
+            cpu_ctx->V[x] = cpu_ctx->V[x] - cpu_ctx->V[y];
             break;
 
         case OP_8xy6:
             // Set Vx = Vx SHR 1
+            //If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is divided by 2.
+            // 11010001
+            // 00000001
+            // ---------
+            // 00000001
+
+            sig_bit = cpu_ctx->V[x] & 0x1;
+            if(sig_bit) {
+                cpu_ctx->V[0xF] = 1;
+            }
+            else {
+                cpu_ctx->V[0x0F] = 0;
+            }
+
+            cpu_ctx->V[x] = cpu_ctx->V[x] / 2;
+
             break;
 
         case OP_8xy7:
             // Set Vx = Vy - Vx, set VF = NOT borrow
+            //If Vy > Vx, then VF is set to 1, otherwise 0. Then Vx is subtracted from Vy, and the results stored in Vx.
+            if(cpu_ctx->V[y] > cpu_ctx->V[x]) {
+                cpu_ctx->V[0xF] = 1;
+            }
+            else {
+                cpu_ctx->V[0xF] = 0;
+            }
+
+            cpu_ctx->V[x] = cpu_ctx->V[y] - cpu_ctx->V[x];
             break;
 
         case OP_8xyE:
             // Set Vx = Vx SHL 1
+            //If the most-significant bit of Vx is 1, then VF is set to 1, otherwise to 0. Then Vx is multiplied by 2.
+            sig_bit = cpu_ctx->V[x] & 0x80;  //0x80 b/c 10000000 is 0x80 (in hex)
+            if(sig_bit) {
+                cpu_ctx->V[0xF] = 1;
+            }
+            else {
+                cpu_ctx->V[0xF] = 0;
+            }
+
+            cpu_ctx->V[x] = cpu_ctx->V[x] * 2;
             break;
 
         case OP_9xy0:
             // Skip next instruction if Vx != Vy
+            if(cpu_ctx->V[x] != cpu_ctx->V[y]) {
+                cpu_ctx->program_counter += 2;
+            }
             break;
 
         case OP_Annn:
             // Set I = nnn
+            //The value of register I is set to nnn.
+            cpu_ctx->I = nnn;
             break;
 
         case OP_Bnnn:
@@ -205,7 +255,7 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
         case OP_Cxkk:
             // Set Vx = random byte AND kk
             x = (opcode& 0x0F00)>>8;
-            cpu_ctx->V[x] = rand(0xFF) & kk;
+            //cpu_ctx->V[x] = rand(0xFF) & kk;
             break;
 
         case OP_Dxyn:
@@ -222,6 +272,8 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_Fx07:
             // Set Vx = delay timer value
+            //The value of DT is placed into Vx.
+            cpu_ctx->V[x] = cpu_ctx->delay_timer;
             break;
 
         case OP_Fx0A:
@@ -230,14 +282,20 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_Fx15:
             // Set delay timer = Vx
+            //DT is set equal to the value of Vx.
+            cpu_ctx->delay_timer = cpu_ctx->V[x];
             break;
 
         case OP_Fx18:
             // Set sound timer = Vx
+            //ST is set equal to the value of Vx.
+            cpu_ctx->sound_timer = cpu_ctx->V[x];
             break;
 
         case OP_Fx1E:
             // Set I = I + Vx
+            //The values of I and Vx are added, and the results are stored in I.
+            cpu_ctx->I = cpu_ctx->I + cpu_ctx->V[x];
             break;
 
         case OP_Fx29:
@@ -250,10 +308,16 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_Fx55:
             // Store registers V0 through Vx in memory starting at location I
+            //The interpreter copies the values of registers V0 through Vx into memory, starting at the address in I.
+
+            memcpy(&cpu_ctx->memory.ram[cpu_ctx->I], cpu_ctx->V, x);
             break;
 
         case OP_Fx65:
             // Read registers V0 through Vx from memory starting at location I
+            //The interpreter reads values from memory starting at location I into registers V0 through Vx.
+
+            memcpy(cpu_ctx->V, &cpu_ctx->memory.ram[cpu_ctx->I], x);
             break;
 
         case UNKNOWN:
