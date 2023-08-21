@@ -11,7 +11,7 @@
 // this struct emulates the registers -> section 2.2 in the reference
 typedef struct cpu{
     // V array represents 16 one byte general purpose registers used by CHIP8
-    uint8_t V[16];
+    uint8_t V[16]; 
     // special 16 bit register in chip-8, used to store memory address
     uint16_t I;
     // see section 2.5 reference
