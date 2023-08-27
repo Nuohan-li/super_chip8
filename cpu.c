@@ -317,6 +317,7 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case UNKNOWN:
             // Unknown instruction
+            printf("ERROR: unknown opcode - %u\n", opcode);
             break;
     }   
 }

@@ -190,13 +190,13 @@ void load_temp_opcode(cpu *cpu_ctx){
 uint32_t break_points[100] = { -1 };
 int break_point_num = 0;
 
-bool break_point_exist(uint32_t address){
+int break_point_exist(uint32_t address){
     for(int i = 0; i < break_point_num; i++){
         if(break_points[i] == address){
-            return true;
+            return i;
         }
     }
-    return false;
+    return -1;
 }
 
 void print_help(){
@@ -206,7 +206,8 @@ void print_help(){
     printf("execute next instruction : n\n");
     printf("set break point for instruction at <addr> : b <addr>\n");
     printf("print all break points : p \n");
-    printf("print register content : r\n");
+    printf("remove a break point : r <addr>\n");
+    printf("remove all break points : r -1\n");
     printf("print register content, stack and next 40 bytes of memory content starting from <addr> : m <addr>\n");
     printf("load test opcodes : l\n");
     printf("run test code : t\n");
@@ -234,6 +235,7 @@ void debugger(cpu *cpu_ctx){
     // char game_name[50];
     printf("Debugging mode\n");
     bool debugger_running = true;
+    memset(break_points, 0, sizeof(break_points)); // resetting break points array to 0 before starting debugger
     while(debugger_running){
         printf(">>> ");
         fgets(input, sizeof(input), stdin);
@@ -284,7 +286,7 @@ void debugger(cpu *cpu_ctx){
                 printf("You have stepped out of memory space allocated for game instructions\n");
                 break;
             }
-            if(break_point_exist(address)){
+            if(break_point_exist(address) != -1){
                 printf("This break point exists already\n");
                 break;
             }
@@ -312,9 +314,27 @@ void debugger(cpu *cpu_ctx){
         case 's': // stands for start
             break;
 
-        // print register
+        // remove a break point
         case 'r':
-            dump_register_content(cpu_ctx);
+            sscanf(input, "%*s %d", &address);
+            if(address == -1){  // remove all break points
+                memset(break_points, 0, sizeof(break_points));
+                break_point_num = 0;
+                printf("all break points removed\n");
+                break;
+            }
+
+            int i = break_point_exist(address); // i is the index of the break point to remove
+            if(i == -1){
+                printf("break point at address %u does not exist\n", address);
+                break;
+            }
+
+            for(; i < break_point_num - 1; i++){  // remove a single break point
+                break_points[i] = break_points[i + 1];
+            }
+            printf("break point at address %u removed\n", address);
+            break_point_num--;
             break;
         // prints registers, memory contents and stack
         case 'm':
