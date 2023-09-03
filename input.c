@@ -18,5 +18,16 @@ int get_key(input *inp, char sdl_key){
     }
 
     return index;
+}
 
+void set_key_pressed(input *inp, int key_index) {
+    inp->key_state[key_index] = PRESSED;
+}
+
+void set_key_released(input *inp, int key_index) {
+    inp->key_state[key_index] = RELEASED;
+}
+
+bool key_current_state(input *inp, int key_index) {
+    return inp->key_state[key_index];
 }

@@ -25,16 +25,16 @@ typedef struct input{
 void init_keyboard(input *inp, char *sdl_keys);
 
 // this function returns the index of the key pressed/released
-int get_key(input *inp, char sdl_key);
+int get_key_index(input *inp, char sdl_key);
 
 // this function sets the state of a given key to PRESSED, key = index of key state in key_state array
-void set_key_pressed(input *inp, int key);
+void set_key_pressed(input *inp, int key_index);
 
 // this function sets the state of a given key to RELEASE 
-void set_key_released(input *inp, int key);
+void set_key_released(input *inp, int key_index);
 
 // this function returns the current state of a key given the index
-bool key_current_state(input *inp, int key);
+bool key_current_state(input *inp, int key_index);
 
 
 
