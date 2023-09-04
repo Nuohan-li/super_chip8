@@ -12,7 +12,7 @@
 #else 
     #define LE16TOBE16(value) value
 #endif
-
+//d 512 1000 start at address 512 and end at 1000
 // dump the content of the memory 
 void dump_memory(uint8_t *memory, size_t size_byte){
     uint16_t bytes_counter = 0;
@@ -199,6 +199,16 @@ int break_point_exist(uint32_t address){
     return -1;
 }
 
+int next_break_point(uint32_t address){
+    for(int i = 0; i < break_point_num; i++){
+        if(break_points[i] > address){
+            //printf("the address is %d \n", address);
+            return break_points[i];
+        }
+    }
+    return -1;
+}
+
 void print_help(){
     printf("execute an instruction at <addr> : e <addr>\n");
     printf("print content of specified memory range : d <starting_addr> <number_of_bytes_to_print>\n");
@@ -213,13 +223,16 @@ void print_help(){
     printf("run test code : t\n");
     printf("print help menu : h\n");
     printf("close debugger : q\n");
+    printf("get next break point: v\n");
+    printf("to print the current address: a\n");
 }
 
 void debugger(cpu *cpu_ctx){
     char *file_name = "GAMES/GAMES/15PUZZLE.ch8";
     FILE* f = fopen(file_name, "rb");  
     fseek(f, 0, SEEK_END);
-    long size = ftell(f);
+    //long size = ftell(f);
+    long size = 500;
     fseek(f, 0, SEEK_SET);
     uint8_t *game = (uint8_t *)malloc(size);
     fread(game, size, 1, f);
@@ -231,6 +244,7 @@ void debugger(cpu *cpu_ctx){
     uint16_t opcode = 0;
     char input[20];
     uint32_t address = 512;
+    uint32_t address_input = 0; //for operations that don't directly involve executing instructions at addresses.
     int size_to_dump = 0;
     // char game_name[50];
     printf("Debugging mode\n");
@@ -239,6 +253,7 @@ void debugger(cpu *cpu_ctx){
     while(debugger_running){
         printf(">>> ");
         fgets(input, sizeof(input), stdin);
+        
         switch (tolower(input[0]))
         {
         // execute a game instruction
@@ -258,8 +273,8 @@ void debugger(cpu *cpu_ctx){
             break;
         // dump memory segments 
         case 'd':
-            sscanf(input, "%*s %d %d", &address, &size_to_dump);
-            dump_memory(&cpu_ctx->memory.ram[address], size_to_dump);
+            sscanf(input, "%*s %d %d", &address_input, &size_to_dump);
+            dump_memory(&cpu_ctx->memory.ram[address_input], size_to_dump);
             break;
         
         // dump game
@@ -281,20 +296,21 @@ void debugger(cpu *cpu_ctx){
         
         // set break point
         case 'b':
-            sscanf(input, "%*s %d", &address);
-            if(address < 512 || address > size + GAME_MEM_SPACE_BEGINNING){
+
+            sscanf(input, "%*s %d", &address_input);
+            if(address_input < 512 || address_input > size + GAME_MEM_SPACE_BEGINNING){
                 printf("You have stepped out of memory space allocated for game instructions\n");
                 break;
             }
-            if(break_point_exist(address) != -1){
+            if(break_point_exist(address_input) != -1){
                 printf("This break point exists already\n");
                 break;
             }
-            if(address % 2 != 0){
+            if(address_input % 2 != 0){
                 printf("Every instruction starts at even address\n");
                 break;        
             }
-            break_points[break_point_num] = address;
+            break_points[break_point_num] = address_input;
             break_point_num++;
             break;
 
@@ -312,34 +328,73 @@ void debugger(cpu *cpu_ctx){
 
         // run until next break point 
         case 's': // stands for start
+            
+            if(next_break_point(address_input) != -1){
+
+                int the_next_break_point = next_break_point(address_input);
+
+                while(address_input != the_next_break_point){
+                    opcode = memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter);
+                    printf("Executing opcode: %04X\n", opcode);
+                    execute_opcode(cpu_ctx, opcode);
+                    address_input = cpu_ctx->program_counter;
+                    printf("Next opcode: %04X - %s\n", 
+                    memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter), 
+                    disassemble(cpu_ctx, cpu_ctx->program_counter).chip8_instr
+                    );
+                }
+            }else{
+                while(address <= size + GAME_MEM_SPACE_BEGINNING){
+                    opcode = memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter);
+                    printf("Executing opcode: %04X\n", opcode);
+                    execute_opcode(cpu_ctx, opcode);
+                    address_input = cpu_ctx->program_counter;
+                    printf("Next opcode: %04X - %s\n", 
+                    memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter), 
+                    disassemble(cpu_ctx, cpu_ctx->program_counter).chip8_instr
+                    );
+                }
+            }
+            
+            break;
+        case 'v':
+            if(next_break_point(address) != -1){
+                printf("The next break point is at address %d \n", next_break_point(address));
+            }else{
+                printf("There are no future break points \n");
+            }
+            break;
+
+        case 'a':
+            printf("The current address is %d \n", address);
             break;
 
         // remove a break point
         case 'r':
-            sscanf(input, "%*s %d", &address);
-            if(address == -1){  // remove all break points
+            sscanf(input, "%*s %d", &address_input);
+            if(address_input == -1){  // remove all break points
                 memset(break_points, 0, sizeof(break_points));
                 break_point_num = 0;
                 printf("all break points removed\n");
                 break;
             }
 
-            int i = break_point_exist(address); // i is the index of the break point to remove
+            int i = break_point_exist(address_input); // i is the index of the break point to remove
             if(i == -1){
-                printf("break point at address %u does not exist\n", address);
+                printf("break point at address %u does not exist\n", address_input);
                 break;
             }
 
             for(; i < break_point_num - 1; i++){  // remove a single break point
                 break_points[i] = break_points[i + 1];
             }
-            printf("break point at address %u removed\n", address);
+            printf("break point at address %u removed\n", address_input);
             break_point_num--;
             break;
         // prints registers, memory contents and stack
         case 'm':
-            sscanf(input, "%*s %d", &address);
-            dump_registers_and_memory(cpu_ctx, address);
+            sscanf(input, "%*s %d", &address_input);
+            dump_registers_and_memory(cpu_ctx, address_input);
             break;
         // run test cases
         case 't':
