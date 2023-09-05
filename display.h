@@ -18,8 +18,8 @@ void screen_set_pixel(display *screen, int x, int y);
 // this function resets a pixel
 void screen_reset_pixel(display *screen, int x, int y);
 
-// this function returns the state of a pixel
-bool pixel_state(display *screen, int x, int y);
+// this function returns the state of a pixel, return -1 if out of bound
+int pixel_state(display *screen, int x, int y);
 
 // this function draws the sprite on the screen
 // things to watch out for -> collision of sprites, collision of sprite on the edge of the screen

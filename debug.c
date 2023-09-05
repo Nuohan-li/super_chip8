@@ -12,6 +12,7 @@
 #else 
     #define LE16TOBE16(value) value
 #endif
+
 //d 512 1000 start at address 512 and end at 1000
 // dump the content of the memory 
 void dump_memory(uint8_t *memory, size_t size_byte){
@@ -46,6 +47,7 @@ void dump_memory(uint8_t *memory, size_t size_byte){
                 printf("   ");
             }
         }
+        printf(" ");
         // printing characters
         for (int j = 0; j < num_bytes_to_print; j++) {
             uint8_t value = memory[i * 32 + j];

@@ -24,11 +24,11 @@ void screen_reset_pixel(display *screen, int x, int y) {
 
 
 // Get the state of a pixel
-bool pixel_state(display *screen, int x, int y) {
+int pixel_state(display *screen, int x, int y) {
     if (x >= 0 && x < 64 && y >= 0 && y < 32) {
         return screen->pixels_array[y][x];
     }
-    return false; // Return false for out-of-bounds coordinates
+    return -1; // Return false for out-of-bounds coordinates
 }
 
 
@@ -42,7 +42,7 @@ bool draw_sprite(display *screen, int x, int y, const char *sprite_ptr, int num_
 
             // Check if the current position is within bounds
             if (current_x >= 0 && current_x < 64 && current_y >= 0 && current_y < 32) {
-                bool current_pixel = (sprite_ptr[i] & (0x80 >> j)) != 0;
+                bool current_pixel = (sprite_ptr[i] & (0x80 >> j)) != 0;  // 0x80 = 0b10000000
                 if (current_pixel && screen->pixels_array[current_y][current_x]) {
                     collision = true;
                 }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <time.h>
 #include "cpu.h"
 #include "display.h"
 #include "disassembler.h"
@@ -90,6 +91,7 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
     switch (instr) {
         case OP_00E0:
             // Clear the display
+            init_display(&cpu_ctx->display);
             break;
 
         case OP_00EE:
@@ -250,19 +252,27 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_Cxkk:
             // Set Vx = random byte AND kk
-            //cpu_ctx->V[x] = rand(0xFF) & kk;
+            srand(time(NULL));
+            cpu_ctx->V[x] = (rand() % 256) & kk;
             break;
 
         case OP_Dxyn:
             // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision
+            cpu_ctx->V[0xF] = draw_sprite(&cpu_ctx->display, cpu_ctx->V[x], cpu_ctx->V[y], &cpu_ctx->memory.ram[cpu_ctx->I], n);
             break;
 
         case OP_Ex9E:
             // Skip next instruction if key with the value of Vx is pressed
+            if(key_current_state(&cpu_ctx->input, cpu_ctx->V[x])){ // how is key stored in register?
+                cpu_ctx->program_counter += 2;
+            }
             break;
 
         case OP_ExA1:
             // Skip next instruction if key with the value of Vx is not pressed
+            if(!key_current_state(&cpu_ctx->input, cpu_ctx->V[x])){ // how is key stored in register?
+                cpu_ctx->program_counter += 2;
+            }
             break;
 
         case OP_Fx07:
@@ -295,10 +305,18 @@ void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
 
         case OP_Fx29:
             // Set I = location of sprite for digit Vx
+            cpu_ctx->I = cpu_ctx->V[x];
             break;
 
         case OP_Fx33:
             // Store BCD representation of Vx in memory locations I, I+1, and I+2
+            // The interpreter takes the decimal value of Vx, and places the hundreds digit in memory at location in I, the tens digit at location I+1, and the ones digit at location I+2.
+            memset(&cpu_ctx->memory.ram[cpu_ctx->I], cpu_ctx->V[x]/100, 1);
+            memset(&cpu_ctx->memory.ram[cpu_ctx->I + 1], ((cpu_ctx->V[x] / 10) % 10), 1);
+            memset(&cpu_ctx->memory.ram[cpu_ctx->I + 2], ( cpu_ctx->V[x]% 10), 1);
+            // memory_set(&cpu_ctx->memory, cpu_ctx->I, cpu_ctx->V[x] / 100);
+            // memory_set(&cpu_ctx->memory, cpu_ctx->I + 1, ( (cpu_ctx->V[x] / 10) % 10));
+            // memory_set(&cpu_ctx->memory, cpu_ctx->I + 2, ( cpu_ctx->V[x]% 10));
             break;
 
         case OP_Fx55:
