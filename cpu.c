@@ -33,7 +33,7 @@ void cpu_init(cpu *cpu_ctx){
 }
 
 // memory space starts at 512 or 0x200 in the memory array 
-void load_game(cpu *cpu_ctx, uint8_t *game, size_t gamesize){
+void load_game(cpu *cpu_ctx, uint8_t *game, int gamesize){
     memcpy(&cpu_ctx->memory.ram[512], game, gamesize);
     cpu_ctx->program_counter = 512;
 }
@@ -71,11 +71,6 @@ void print_stack(cpu *cpu_ctx){
 //                          INSTRUCTIONS
 //
 //////////////////////////////////////////////////////////////////////////////////
-
-// 00E0
-void cls_display(cpu *cpu_ctx){
-    init_display(&cpu_ctx->display);
-}
 
 void execute_opcode(cpu *cpu_ctx, uint16_t opcode) {
     int nnn = (opcode & 0xFFF);

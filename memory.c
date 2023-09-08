@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <string.h>
 #include "memory.h"
-#include "cpu.h"
 
 void memory_init(memory *mem){
     memset(mem, 0, sizeof(memory));

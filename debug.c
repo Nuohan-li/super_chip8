@@ -172,26 +172,27 @@ void dump_game_content(char *file_name){
 
 void load_temp_opcode(cpu *cpu_ctx){
     uint16_t test_instr[] = { 
-        0x71F0, 0x812E, 0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x1212, // 0x1212 sets PC = 0x212
-        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x2200, // 0x2204 pushes old PC to stack and then sets PC to 0x200
-        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x00ee, // 0x00ee pops and set PC to popped value (BX LR)
-        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x3102, // 0x3102 -> if V1 = 02, PC += 2 
-        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x3122, // 0x3122 -> if V1 = 22, PC += 2
-        0x6302, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x4122, // 0x4122 -> if V1 != 22, PC += 2
-        0x6102, 0x75F1,  0x8A10, 0x8121, 0x8232, 0x4102, // 0x4102 -> if V1 != 02, PC += 2
-        0x6102, 0x6202,  0x8A10, 0x8121, 0x8232, 0x5120, // 0x5120 -> if V1 = V2, PC += 2 
-        0x6102, 0x6212,  0x8A10, 0x8121, 0x8232, 0x5120, // 0x5120 -> if V1 = V2, PC += 2 
+        0x71F0, 0x812E, 0x6102, 0x75F1, 0x8A10, 0x8121, 0x8232, 0x1212, // 0x1212 sets PC = 0x212
+        0x6102, 0x75F1, 0x8A10, 0x8121, 0x8232, 0x2200, // 0x2204 pushes old PC to stack and then sets PC to 0x200
+        0x6102, 0x75F1, 0x8A10, 0x8121, 0x8232, 0x00ee, // 0x00ee pops and set PC to popped value (BX LR)
+        0x6102, 0x75F1, 0x8A10, 0x8121, 0x8232, 0x3102, // 0x3102 -> if V1 = 02, PC += 2 
+        0x6102, 0x75F1, 0x8A10, 0x8121, 0x8232, 0x3122, // 0x3122 -> if V1 = 22, PC += 2
+        0x6302, 0x75F1, 0x8A10, 0x8121, 0x8232, 0x4122, // 0x4122 -> if V1 != 22, PC += 2
+        0x6102, 0x75F1, 0x8A10, 0x8121, 0x8232, 0x4102, // 0x4102 -> if V1 != 02, PC += 2
+        0x6102, 0x6202, 0x8A10, 0x8121, 0x8232, 0x5120, // 0x5120 -> if V1 = V2, PC += 2 
+        0x6102, 0x6212, 0x8A10, 0x8121, 0x8232, 0x5120, // 0x5120 -> if V1 = V2, PC += 2 
     };
-    for(int i = 0; i < sizeof(test_instr); i++){
+    for(int i = 0; i < sizeof(test_instr) / sizeof(test_instr[0]); i++){
         test_instr[i] = LE16TOBE16(test_instr[i]);
     }
     memory_init(&cpu_ctx->memory);
-    load_game(cpu_ctx, (uint8_t *)test_instr, sizeof(test_instr));
+    load_game(cpu_ctx, test_instr, sizeof(test_instr));
 }
 
 uint32_t break_points[100] = { -1 };
 int break_point_num = 0;
 
+// this function returns the index of the break point in break_points array, otherwise -1 is returned
 int break_point_exist(uint32_t address){
     for(int i = 0; i < break_point_num; i++){
         if(break_points[i] == address){
@@ -234,19 +235,19 @@ void debugger(cpu *cpu_ctx){
     FILE* f = fopen(file_name, "rb");  
     fseek(f, 0, SEEK_END);
     //long size = ftell(f);
-    long size = 500;
+    long size = 500;  // I am not sure if hard coding it is a good idea, as ftell returns the index of f pointer, and the index = num of bytes in that file
     fseek(f, 0, SEEK_SET);
     uint8_t *game = (uint8_t *)malloc(size);
     fread(game, size, 1, f);
-    memory_init(&cpu_ctx->memory);
+    cpu_init(cpu_ctx);
+    // memory_init(&cpu_ctx->memory);
     load_game(cpu_ctx, game, size);
     free(game);
-    // dump_memory(cpu_ctx->memory.ram, 4096);
 
     uint16_t opcode = 0;
     char input[20];
     uint32_t address = 512;
-    uint32_t address_input = 0; //for operations that don't directly involve executing instructions at addresses.
+    uint32_t address_input = 512; //for operations that don't directly involve executing instructions at addresses.
     int size_to_dump = 0;
     // char game_name[50];
     printf("Debugging mode\n");
@@ -341,8 +342,8 @@ void debugger(cpu *cpu_ctx){
                     execute_opcode(cpu_ctx, opcode);
                     address_input = cpu_ctx->program_counter;
                     printf("Next opcode: %04X - %s\n", 
-                    memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter), 
-                    disassemble(cpu_ctx, cpu_ctx->program_counter).chip8_instr
+                        memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter), 
+                        disassemble(cpu_ctx, cpu_ctx->program_counter).chip8_instr
                     );
                 }
             }else{
@@ -352,8 +353,8 @@ void debugger(cpu *cpu_ctx){
                     execute_opcode(cpu_ctx, opcode);
                     address_input = cpu_ctx->program_counter;
                     printf("Next opcode: %04X - %s\n", 
-                    memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter), 
-                    disassemble(cpu_ctx, cpu_ctx->program_counter).chip8_instr
+                        memory_get_two_bytes(&cpu_ctx->memory, cpu_ctx->program_counter), 
+                        disassemble(cpu_ctx, cpu_ctx->program_counter).chip8_instr
                     );
                 }
             }
@@ -422,7 +423,8 @@ void debugger(cpu *cpu_ctx){
 
 void test(){
     // memory test 
-    printf("\n========================= MEMORY TEST ========================== \n");    memory mem;
+    printf("\n========================= MEMORY TEST ========================== \n");    
+    memory mem;
     memory_set(&mem, 32, 0x20);
     memory_set(&mem, 13, 0x83);
     memory_set(&mem, 10, 0x10);
@@ -436,9 +438,9 @@ void test(){
     printf("at address 63        - %04x\n", memory_get_one_byte(&mem, 63));
     printf("at address 64 and 65 - %04x\n", memory_get_two_bytes(&mem, 64));
     dump_memory(mem.ram, 97);
-    printf("printing the entire memory content\n");
+    printf("\n\nprinting the entire memory content\n");
     dump_memory(mem.ram, CHIP8_RAM_SIZE_BYTES);
-    printf("initializing memory\n");
+    printf("\n\ninitializing memory\n");
     memory_init(&mem);
     dump_memory(mem.ram, CHIP8_RAM_SIZE_BYTES);
     printf("\n\n");
@@ -455,10 +457,6 @@ void test(){
     cpu_ctx.stack_pointer = 0x12;
     dump_register_content(&cpu_ctx);
 
-    // CPU execute opcode
-    printf("\n========================= CPU EXECUTE OPCODE TEST ========================== \n");
-    execute_opcode(&cpu_ctx, 0x00E0);
-
     // Stack test 
     printf("\n========================= STACK TEST ========================== \n");
     cpu_init(&cpu_ctx);
@@ -468,10 +466,15 @@ void test(){
     push(&cpu_ctx, 0x56);
     printf("stack pointer now pointing to %04X (should be 0x56), and stack pointer is %04X\n", 
         cpu_ctx.memory.stack[cpu_ctx.stack_pointer], cpu_ctx.stack_pointer);
+    printf("stack :\n");
+    print_stack(&cpu_ctx);
+    printf("pushing 0x12\n");
     push(&cpu_ctx, 0x12);
     printf("%04X popped (should be 0x12)\n", pop(&cpu_ctx));
+    printf("pushing 0x34\n");
     push(&cpu_ctx, 0x34);
     printf("%04X popped (should be 0x34)\n", pop(&cpu_ctx));
+    printf("pushing 0x56\n");
     push(&cpu_ctx, 0x56);
     printf("%04X popped (should be 0x56)\n", pop(&cpu_ctx));
     print_stack(&cpu_ctx);

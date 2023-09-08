@@ -34,7 +34,7 @@ typedef struct cpu{
 void cpu_init(cpu *cpu_ctx);
 
 // load th game into the memory 
-void load_game(cpu *cpu_ctx, uint8_t *game, size_t gamesize);
+void load_game(cpu *cpu_ctx, uint8_t *game, int gamesize);
 
 void execute_opcode(cpu *cpu_ctx, uint16_t opcode);
 
